@@ -1,0 +1,107 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Category {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  type: TransactionCategoryType!
+  updatedAt: DateTime!
+}
+
+input CreateCategoryDto {
+  name: String!
+  type: TransactionCategoryType!
+  userId: Int
+}
+
+input CreateTransactionDto {
+  amount: Float!
+  categoryId: Int!
+  date: DateTime!
+  description: String!
+  userId: Int
+}
+
+input CreateUserDto {
+  email: String!
+  name: String!
+  password: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  createCategory(input: CreateCategoryDto!): Category!
+  createTransaction(input: CreateTransactionDto!): Transaction!
+  createUser(input: CreateUserDto!): User!
+  login(input: LoginInput!): String!
+  removeCategory(categoryId: Int!): Category!
+  removeTransaction(transactionId: Int!): Transaction!
+  removeUser(userId: Int!): User!
+  updateCategory(categoryId: Int!, input: UpdateCategoryDto!): Category!
+  updateTransaction(input: UpdateTransactionDto!, transactionId: Int!): Transaction!
+  updateUser(input: UpdateUserDto!): User!
+}
+
+type Query {
+  getAllUsers: [User!]!
+  getCategoriesForUser: [Category!]!
+  getCategoryById(categoryId: Int!): Category
+  getTransactionById(transactionId: Int!): Transaction
+  getTransactionsForUser: [Transaction!]!
+  getUserById(userId: Int!): User
+}
+
+type Transaction {
+  amount: Float!
+  category: Category!
+  createdAt: DateTime!
+  date: DateTime!
+  description: String!
+  id: ID!
+  updatedAt: DateTime!
+}
+
+enum TransactionCategoryType {
+  EXPENSE
+  INCOME
+}
+
+input UpdateCategoryDto {
+  name: String
+  type: TransactionCategoryType
+  userId: Int
+}
+
+input UpdateTransactionDto {
+  amount: Float
+  categoryId: Int
+  date: DateTime
+  description: String
+  userId: Int
+}
+
+input UpdateUserDto {
+  email: String
+  name: String
+  password: String
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  name: String!
+  password: String!
+  updatedAt: DateTime!
+}
