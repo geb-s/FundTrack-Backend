@@ -1,14 +1,13 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { User } from 'src/users/user.entity';
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { LoginInput } from './dto/login.input';
-
+import { JwtAuthGuard } from './jwt-auth.guard';
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation((returns) => String)
+  @Mutation(() => String)
   async login(@Args('input') input: LoginInput): Promise<string> {
     const { email, password } = input;
     const user = await this.authService.validateUser(email, password);
@@ -17,5 +16,11 @@ export class AuthResolver {
     }
     const token = await this.authService.generateToken(user);
     return token;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => String)
+  async validateToken(): Promise<string> {
+    return 'valid';
   }
 }

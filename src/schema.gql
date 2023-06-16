@@ -51,6 +51,7 @@ type Mutation {
   updateCategory(categoryId: Int!, input: UpdateCategoryDto!): Category!
   updateTransaction(input: UpdateTransactionDto!, transactionId: Int!): Transaction!
   updateUser(input: UpdateUserDto!): User!
+  validateToken: String!
 }
 
 type Query {
