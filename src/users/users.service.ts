@@ -55,11 +55,17 @@ export class UsersService {
     if (name) {
       user.name = name;
     }
-    if (email) {
+    if (email && user.email != email) {
+      const existingUserWithEmail = await this.findUserByEmail(email);
+      if (existingUserWithEmail) {
+        throw new ConflictException('Email already exists');
+      }
       user.email = email;
     }
+
     if (password) {
-      user.password = password;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
     }
 
     return await this.usersRepository.save(user);

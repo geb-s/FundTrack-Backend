@@ -34,6 +34,17 @@ export class UsersResolver {
     return user;
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Query(() => User, { nullable: true })
+  async getUser(@Context() jwtContext: JwtContext): Promise<User> {
+    const userId = jwtContext.req.user.id;
+    const user = await this.usersService.findUserById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+    return user;
+  }
+
   @Mutation(() => User)
   @UsePipes(new ValidationPipe({ transform: true }))
   async createUser(@Args('input') createUserDto: CreateUserDto): Promise<User> {

@@ -6,12 +6,18 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { Transaction } from './transaction.entity';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { UsersService } from 'src/users/users.service';
 import { CategoriesService } from 'src/categories/categories.service';
+import {
+  TotalAmountPerCurrencyByTypeDto,
+  TransactionTypeAmount,
+} from './dto/total-amount-per-currency-by-type.dto';
+import { Category } from 'src/categories/category.entity';
+import { TransactionCategoryType } from 'src/common/enums/transaction-category-type.enum';
 
 @Injectable()
 export class TransactionsService {
@@ -90,8 +96,115 @@ export class TransactionsService {
   async findTransactionsByUserId(userId: number): Promise<Transaction[]> {
     const transactions = await this.transactionsRepository.find({
       where: { user: { id: userId } },
+      relations: { category: true },
+    });
+    return transactions;
+  }
+
+  async findMostRecentTransactions(userId: number): Promise<Transaction[]> {
+    const transactions = await this.transactionsRepository.find({
+      where: { user: { id: userId } },
+      relations: { category: true },
+      order: { date: 'DESC' },
+      take: 5,
+    });
+    return transactions;
+  }
+  async getTotalAmountPerCurrencyByType(
+    userId: number,
+  ): Promise<TotalAmountPerCurrencyByTypeDto> {
+    const transactions = await this.transactionsRepository.find({
+      where: { user: { id: userId } },
+      relations: { category: true },
+    });
+
+    const result: TotalAmountPerCurrencyByTypeDto = {
+      transactionTypeAmount: [],
+    };
+
+    transactions.forEach((transaction: Transaction) => {
+      const { currency, category, amount } = transaction;
+
+      const typeAmount = result.transactionTypeAmount.find(
+        (item) => item.currency === currency && item.type === category.type,
+      );
+
+      if (typeAmount) {
+        typeAmount.totalAmount += amount;
+      } else {
+        result.transactionTypeAmount.push({
+          type: category.type,
+          currency,
+          totalAmount: amount,
+        });
+      }
+    });
+
+    return result;
+  }
+
+  async getMostCommonCategories(
+    userId: number,
+    limit: number,
+  ): Promise<Category[]> {
+    const [incomeCategories, expenseCategories] = await Promise.all([
+      this.getMostCommonCategoriesByType(
+        userId,
+        TransactionCategoryType.INCOME,
+        limit,
+      ),
+      this.getMostCommonCategoriesByType(
+        userId,
+        TransactionCategoryType.EXPENSE,
+        limit,
+      ),
+    ]);
+
+    return [...incomeCategories, ...expenseCategories];
+  }
+
+  async getMostCommonCategoriesByType(
+    userId: number,
+    type: TransactionCategoryType,
+    limit: number,
+  ): Promise<Category[]> {
+    const mostCommonCategories = await this.transactionsRepository
+      .createQueryBuilder('transaction')
+      .select('category.id', 'categoryId')
+      .addSelect('category.name', 'categoryName')
+      .addSelect('COUNT(*)', 'count')
+      .innerJoin('transaction.category', 'category')
+      .innerJoin('transaction.user', 'user')
+      .where('category.type = :type', { type })
+      .andWhere('user.id = :userId', { userId })
+      .groupBy('category.id')
+      .orderBy('count', 'DESC')
+      .limit(limit)
+      .getRawMany();
+
+    return mostCommonCategories.map((result) => {
+      const newCategory = new Category();
+      newCategory.id = result.categoryId;
+      newCategory.name = result.categoryName;
+      newCategory.type = type;
+
+      return newCategory;
+    });
+  }
+
+  async getTransactionsLastThreeMonths(userId: number): Promise<Transaction[]> {
+    const currentDate = new Date();
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+
+    const transactions = await this.transactionsRepository.find({
+      where: {
+        user: { id: userId },
+        date: Between(threeMonthsAgo, currentDate),
+      },
       relations: ['category'],
     });
+
     return transactions;
   }
 

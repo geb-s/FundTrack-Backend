@@ -3,10 +3,11 @@ import {
   IsNumber,
   IsString,
   IsPositive,
-  IsDateString,
   IsOptional,
+  IsEnum,
 } from 'class-validator';
 import { InputType, Field, Float, Int } from '@nestjs/graphql';
+import { TransactionCurrency } from 'src/common/enums/transaction-currency.enum';
 
 @InputType()
 export class CreateTransactionDto {
@@ -21,9 +22,15 @@ export class CreateTransactionDto {
   @IsString()
   description: string;
 
+  @Field(() => TransactionCurrency)
+  @IsNotEmpty()
+  @IsEnum(TransactionCurrency, {
+    message: 'Invalid transaction currency',
+  })
+  currency?: TransactionCurrency;
+
   @Field()
   @IsNotEmpty()
-  @IsDateString()
   date: Date;
 
   @Field(() => Int)

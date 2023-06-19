@@ -7,9 +7,14 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
 import { User } from '../users/user.entity';
 import { Category } from 'src/categories/category.entity';
+import { TransactionCurrency } from 'src/common/enums/transaction-currency.enum';
+
+registerEnumType(TransactionCurrency, {
+  name: 'TransactionCurrency',
+});
 
 @ObjectType()
 @Entity()
@@ -21,6 +26,14 @@ export class Transaction {
   @Field()
   @Column()
   amount: number;
+
+  @Field(() => TransactionCurrency)
+  @Column({
+    type: 'enum',
+    enum: TransactionCurrency,
+    default: TransactionCurrency.USD,
+  })
+  currency: TransactionCurrency;
 
   @Field()
   @Column()

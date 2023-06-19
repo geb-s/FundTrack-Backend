@@ -2,6 +2,8 @@ import {
   ConflictException,
   NotFoundException,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   Resolver,
@@ -20,6 +22,8 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { JwtContext } from 'src/common/jwt-context.interface';
 import { Category } from 'src/categories/category.entity';
+import { TransactionCurrency } from 'src/common/enums/transaction-currency.enum';
+import { TotalAmountPerCurrencyByTypeDto } from './dto/total-amount-per-currency-by-type.dto';
 
 @UseGuards(JwtAuthGuard)
 @Resolver(() => Transaction)
@@ -47,7 +51,48 @@ export class TransactionsResolver {
     return transactions;
   }
 
+  @Query(() => [Transaction])
+  async getMostRecentTransactions(
+    @Context() jwtContext: JwtContext,
+  ): Promise<Transaction[]> {
+    const userId = jwtContext.req.user.id;
+    const transactions =
+      await this.transactionsService.findMostRecentTransactions(userId);
+    return transactions;
+  }
+
+  @Query(() => [Transaction])
+  async getTransactionsLastThreeMonths(
+    @Context() jwtContext: JwtContext,
+  ): Promise<Transaction[]> {
+    const userId = jwtContext.req.user.id;
+    const transactions =
+      await this.transactionsService.getTransactionsLastThreeMonths(userId);
+    return transactions;
+  }
+
+  @Query(() => TotalAmountPerCurrencyByTypeDto)
+  async getTotalAmountPerCurrencyByType(
+    @Context() jwtContext: JwtContext,
+  ): Promise<TotalAmountPerCurrencyByTypeDto> {
+    const userId = jwtContext.req.user.id;
+    const totalAmountPerCurrencyByType =
+      await this.transactionsService.getTotalAmountPerCurrencyByType(userId);
+    return totalAmountPerCurrencyByType;
+  }
+
+  @Query(() => [Category])
+  async getMostCommonCategories(
+    @Context() jwtContext: JwtContext,
+  ): Promise<Category[]> {
+    const userId = jwtContext.req.user.id;
+    const mostCommonCategories =
+      await this.transactionsService.getMostCommonCategories(userId, 5);
+    return mostCommonCategories;
+  }
+
   @Mutation(() => Transaction)
+  @UsePipes(new ValidationPipe({ transform: true }))
   async createTransaction(
     @Args('input') createTransactionDto: CreateTransactionDto,
     @Context() jwtContext: JwtContext,
@@ -58,6 +103,7 @@ export class TransactionsResolver {
   }
 
   @Mutation(() => Transaction)
+  @UsePipes(new ValidationPipe({ transform: true }))
   async updateTransaction(
     @Args('transactionId', { type: () => Int }) id: number,
     @Args('input') updateTransactionDto: UpdateTransactionDto,
@@ -65,6 +111,9 @@ export class TransactionsResolver {
   ): Promise<Transaction> {
     const userId = jwtContext.req.user.id;
     updateTransactionDto.userId = userId;
+    if (updateTransactionDto.date) {
+      updateTransactionDto.date = new Date(updateTransactionDto.date);
+    }
     return this.transactionsService.updateTransaction(id, updateTransactionDto);
   }
 
@@ -88,6 +137,16 @@ export class TransactionsResolver {
 
     await this.transactionsService.deleteTransaction(id);
     return transaction;
+  }
+
+  @Query(() => [TransactionCurrency])
+  async getCurrencies(): Promise<TransactionCurrency[]> {
+    const enumValues = Object.keys(TransactionCurrency).map(
+      (key) => TransactionCurrency[key],
+    );
+    return enumValues.filter(
+      (value) => typeof value === 'string',
+    ) as TransactionCurrency[];
   }
 
   @ResolveField(() => Category)

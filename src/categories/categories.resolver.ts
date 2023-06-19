@@ -12,6 +12,7 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './category.entity';
+import { TransactionCategoryType } from 'src/common/enums/transaction-category-type.enum';
 
 @UseGuards(JwtAuthGuard)
 @Resolver(() => Category)
@@ -58,6 +59,16 @@ export class CategoriesResolver {
     @Args('input') updateCategoryDto: UpdateCategoryDto,
   ): Promise<Category> {
     return this.categoriesService.updateCategory(id, updateCategoryDto);
+  }
+
+  @Query(() => [TransactionCategoryType])
+  async getCategoryTypes(): Promise<TransactionCategoryType[]> {
+    const enumValues = Object.keys(TransactionCategoryType).map(
+      (key) => TransactionCategoryType[key],
+    );
+    return enumValues.filter(
+      (value) => typeof value === 'string',
+    ) as TransactionCategoryType[];
   }
 
   @Mutation(() => Category)

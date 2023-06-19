@@ -19,6 +19,7 @@ input CreateCategoryDto {
 input CreateTransactionDto {
   amount: Float!
   categoryId: Int!
+  currency: TransactionCurrency!
   date: DateTime!
   description: String!
   userId: Int
@@ -58,15 +59,27 @@ type Query {
   getAllUsers: [User!]!
   getCategoriesForUser: [Category!]!
   getCategoryById(categoryId: Int!): Category
+  getCategoryTypes: [TransactionCategoryType!]!
+  getCurrencies: [TransactionCurrency!]!
+  getMostCommonCategories: [Category!]!
+  getMostRecentTransactions: [Transaction!]!
+  getTotalAmountPerCurrencyByType: TotalAmountPerCurrencyByTypeDto!
   getTransactionById(transactionId: Int!): Transaction
   getTransactionsForUser: [Transaction!]!
+  getTransactionsLastThreeMonths: [Transaction!]!
+  getUser: User
   getUserById(userId: Int!): User
+}
+
+type TotalAmountPerCurrencyByTypeDto {
+  transactionTypeAmount: [TransactionTypeAmount!]!
 }
 
 type Transaction {
   amount: Float!
   category: Category!
   createdAt: DateTime!
+  currency: TransactionCurrency!
   date: DateTime!
   description: String!
   id: ID!
@@ -78,6 +91,18 @@ enum TransactionCategoryType {
   INCOME
 }
 
+enum TransactionCurrency {
+  EUR
+  LBP
+  USD
+}
+
+type TransactionTypeAmount {
+  currency: TransactionCurrency!
+  totalAmount: Float!
+  type: String!
+}
+
 input UpdateCategoryDto {
   name: String
   type: TransactionCategoryType
@@ -87,6 +112,7 @@ input UpdateCategoryDto {
 input UpdateTransactionDto {
   amount: Float
   categoryId: Int
+  currency: TransactionCurrency
   date: DateTime
   description: String
   userId: Int
