@@ -1,73 +1,38 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# FundTrack Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+FundTrack Backend is the server-side application that powers the FundTrack personal finance management system. It provides the necessary APIs and functionalities for managing users, transactions, categories, and authentication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Technologies and Frameworks
 
-## Description
+FundTrack Backend is built using the following technologies and frameworks:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Nest.js: A progressive Node.js framework for building efficient, scalable, and maintainable server-side applications.
+- TypeORM: An Object-Relational Mapping (ORM) library for TypeScript and JavaScript that simplifies database interactions.
+- MySQL: A popular relational database management system used for storing and retrieving data.
+- GraphQL: A query language and runtime for APIs that provides a flexible and efficient approach to data fetching.
+
+## Project Structure
+
+The project follows a structured organization with the following important folders:
+
+- **auth**: Contains the authentication-related functionality mainly JWT token management.
+- **categories**: Manages the transaction categories, such as income and expense types.
+- **common**: Holds common utilities, interfaces, and enums used throughout the application.
+- **transactions**: Handles the creation, retrieval, and management of financial transactions.
+- **users**: Provides functionality for managing users, including user creation, retrieval, and updates.
+
+Additionally, you'll find the following files:
+
+- **package.json**: Lists the project's dependencies, scripts, and other metadata.
 
 ## Installation
 
-```bash
-$ npm install
-```
+To set up the backend application locally, follow these steps:
 
-## Running the app
+1. Clone the repository: `git clone <repository-url>`
+2. Navigate to the project directory: `cd personal-finance-management-system-backend`
+3. Install dependencies: `npm install`
+4. Start the development server: `npm run start:dev`
+5. Open your browser and visit: `http://localhost:3005`
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+Please ensure that you have MySQL installed and running, and update the `app.module.ts` file with your database configuration before starting the server.
