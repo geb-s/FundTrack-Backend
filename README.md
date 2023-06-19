@@ -30,7 +30,7 @@ Additionally, you'll find the following files:
 To set up the backend application locally, follow these steps:
 
 1. Clone the repository: `git clone <repository-url>`
-2. Navigate to the project directory: `cd personal-finance-management-system-backend`
+2. Navigate to the project directory: `cd FundTrack-Backend`
 3. Install dependencies: `npm install`
 4. Start the development server: `npm run start:dev`
 5. Open your browser and visit: `http://localhost:3005`
